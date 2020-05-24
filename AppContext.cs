@@ -19,6 +19,13 @@ namespace UETK7
 
         public static bool DebugLogging = false;
 
+        public const int LOG_TYPE_INFO = 1;
+        public const int LOG_TYPE_WARNING = 2;
+        public const int LOG_TYPE_ERROR = 3;
+        public const int LOG_TYPE_DEBUG = 4;
+
+        public static Action<string, string, int> LogAction;
+
         public static bool IsInitialized { get; private set; }
 
         /// <summary>
@@ -35,15 +42,18 @@ namespace UETK7
         /// <summary>
         /// Initializes the application context.
         /// </summary>
-        public static void Initialize()
+        public static void Initialize(bool showConsole = true)
         {
             // Allocate the console
-            AllocConsole();
+            if(showConsole)
+                AllocConsole();
 
-            LogInner("INFO", "Initializing...");
+            LogInner("INFO", "Initializing TKContext...");
 
             Log("INFO", "Application", $"{APPLICATION_NAME} {MainVersion} by {APPLICATION_AUTHOR}");
-            Log("INFO", "Application", "Closing this console window WILL CLOSE the application and all of it's windows.", ConsoleColor.DarkRed);
+
+            if(showConsole)
+                Log("INFO", "Application", "Closing this console window WILL CLOSE the application and all of it's windows.", LOG_TYPE_WARNING, ConsoleColor.DarkRed);
 
             if(ApplicationVariables.Exists())
             {
@@ -146,11 +156,13 @@ namespace UETK7
         /// <param name="topic"></param>
         /// <param name="msg"></param>
         /// <param name="color"></param>
-        public static void Log(string prefix, string topic, string msg, ConsoleColor color = ConsoleColor.White)
+        public static void Log(string prefix, string topic, string msg, int logType = LOG_TYPE_INFO, ConsoleColor color = ConsoleColor.White)
         {
             Console.ForegroundColor = color;
             Console.WriteLine($"[{prefix} -> {topic}] " + msg);
             Console.ForegroundColor = ConsoleColor.White;
+
+            LogAction?.Invoke($"{prefix} -> {topic}", msg, logType);
         }
 
         public static void DebugLog(string prefix, string topic, string msg, ConsoleColor color = ConsoleColor.White)
@@ -158,29 +170,29 @@ namespace UETK7
             if (!DebugLogging)
                 return;
 
-            Console.ForegroundColor = color;
-            Console.WriteLine($"[{prefix} -> {topic}] " + msg);
-            Console.ForegroundColor = ConsoleColor.White;
+            Log(prefix, topic, msg, LOG_TYPE_DEBUG, color);
+
+            LogAction?.Invoke($"{prefix} -> {topic}", msg, LOG_TYPE_DEBUG);
         }
 
         public static void LogWarning(string msg)
         {
-            Log("WARNING", GetCurrentMethod(), msg, ConsoleColor.Red);
+            Log("WARNING", GetCurrentMethod(), msg, LOG_TYPE_WARNING, ConsoleColor.Red);
         }
 
         public static void LogException(string msg)
         {
-            Log("EXCEPTION", GetCurrentMethod(), msg, ConsoleColor.Red);
+            Log("EXCEPTION", GetCurrentMethod(), msg, LOG_TYPE_ERROR, ConsoleColor.Red);
         }
 
         public static void LogError(string msg)
         {
-            Log("ERROR", GetCurrentMethod(), msg, ConsoleColor.DarkRed);
+            Log("ERROR", GetCurrentMethod(), msg, LOG_TYPE_ERROR, ConsoleColor.DarkRed);
         }
 
         public static void LogInner(string prefix, string msg, ConsoleColor color = ConsoleColor.White)
         {
-            Log(prefix, GetCurrentMethod(), msg, color);
+            Log(prefix, GetCurrentMethod(), msg, LOG_TYPE_INFO, color);
         }
 
         public static void Throw()
