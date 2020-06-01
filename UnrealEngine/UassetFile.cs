@@ -25,7 +25,7 @@ namespace UETK7.UnrealEngine
         /// 0x8-0x18
         /// </summary>
         private const int UASSET_UNK_DATA_OFFSET = 0x8;
-        private const int UASSET_UNK_OFFSET = 0x18;
+        private const int UASSET_DATA_ENTRY_OFFSET = 0x18;
         private const int UASSET_PACKAGE_GROUP_OFFSET = 0x20;
         private const int UASSET_NAMES_COUNT_OFFSET = 0x29;
         private const int UASSET_NAMES_TABLE_OFFSET = 0x2D;
@@ -37,17 +37,22 @@ namespace UETK7.UnrealEngine
         private const int UASSET_NAMES_COUNT_2_OFFSET = 0x71;
         private const int UASSET_UNK_OFFSET_3 = 0xA1;
         private const int UASSET_END_OF_FILE_OFFSET = 0xA5;
-        private const int UASSET_UNK_OFFSET_4 = 0xB9;
+        private const int UASSET_DATA_ENTRY_OFFSET_2 = 0xB9;
 
         /// <summary>
         /// The unreal engine version that this uasset was built on/for.
         /// </summary>
-        public int LicenseVersion { get; private set; }
+        public uint Version { get; private set; }
 
         /// <summary>
         /// The uasset package group.
         /// </summary>
         public string PackageGroup;
+
+        /// <summary>
+        /// Package's flags.
+        /// </summary>
+        public uint PackageFlags;
 
         /// <summary>
         /// The uasset's file name without the extension.
@@ -121,7 +126,7 @@ namespace UETK7.UnrealEngine
         /// <summary>
         /// The unreal engine 4 version this uasset file probably came from.
         /// </summary>
-        public UE4Version UE4Version { get; private set; }
+        //public UE4Version UE4Version { get; private set; }
 
         public FNameEntry[] NamesTable { get; private set; }
         public FObjectImport[] ImportsTable { get; private set; }
@@ -140,36 +145,16 @@ namespace UETK7.UnrealEngine
             stream.position = 0;
 
             var signature = stream.ReadUInt();
+
             // Check for the file's signature.
             if (signature != UNREAL_ASSET_MAGIC)
             {
-                //Application.Console.Main.Print("The file provided is not a valid .uasset file.");
                 TKContext.LogInner("ERROR", "The file provided is not a valid .uasset file.");
                 IsValid = false;
                 return;
             }
 
-            LicenseVersion = stream.ReadInt();
-
-            // Get the unreal engine version from the license version
-            switch(LicenseVersion)
-            {
-                case UNREAL_LICENSE_VERSION_TK7_0_2015:
-                    UE4Version = UE4Version.UE4__4_4_0_0_r2256484;
-                    break;
-
-                case UNREAL_LICENSE_VERSION_TK7FR_2016:
-                    UE4Version = UE4Version.UE4__4_9_2_0_deport_release;
-                    break;
-
-                case UNREAL_LICENSE_VERSION_TK7_CONSOLE:
-                    UE4Version = UE4Version.UE4__4_13_2_r0;
-                    break;
-
-                default:
-                    UE4Version = UE4Version.Undefined;
-                    break;
-            }
+            Version = stream.ReadUInt();
 
             stream.ReadBytes(0x10);
             UnkOffset = stream.ReadInt();
@@ -177,13 +162,13 @@ namespace UETK7.UnrealEngine
 
             PackageGroup = Encoding.ASCII.GetString(stream.ReadBytes(0x4));
 
-            stream.ReadBytes(0x5);
+            stream.ReadBytes(0x1);
 
+            PackageFlags = stream.ReadUInt();
             NamesCount = stream.ReadInt();
             NamesOffset = stream.ReadInt();
 
-            if(UE4Version == UE4Version.UE4__4_13_2_r0)
-                stream.ReadBytes(0x8);
+            stream.ReadBytes(0x8);
 
             ExportsCount = stream.ReadInt();
             ExportsOffset = stream.ReadInt();
@@ -191,45 +176,36 @@ namespace UETK7.UnrealEngine
             ImportsCount = stream.ReadInt();
             ImportsOffset = stream.ReadInt();
 
-            if (UE4Version == UE4Version.UE4__4_13_2_r0)
-                stream.ReadBytes(0x8);
+            stream.ReadBytes(0x8);
 
             UnkOffset2 = stream.ReadInt();
 
-            if (UE4Version == UE4Version.UE4__4_13_2_r0)
-                stream.ReadBytes(0x1C);
-            else stream.ReadBytes(0x24); // 7.0
+            stream.ReadBytes(0x1C);
 
             NamesCount2 = stream.ReadInt();
 
-            if (UE4Version == UE4Version.UE4__4_13_2_r0)
-                stream.ReadBytes(0x2C);
-            else stream.ReadBytes(0x22);
+            stream.ReadBytes(0x2C);
 
             UnkOffset3 = stream.ReadInt();
             EndOfFileOffset = stream.ReadInt();
 
-            if (UE4Version == UE4Version.UE4__4_13_2_r0)
-            {
-                stream.ReadBytes(0x10);
-                UnkOffset4 = stream.ReadInt();
-            } else
-            {
-                stream.ReadBytes(0xC);
-            }
+            stream.ReadBytes(0x10);
+            UnkOffset4 = stream.ReadInt();
 
             IsValid = true;
 
             stream.position = NamesOffset;
 
-            NamesTable = stream.ReadFNameEntries(NamesCount, UE4Version);
+            NamesTable = stream.ReadFNameEntries(NamesCount, UE4Version.UE4__4_14);
 
 
             for(int i = 0; i < NamesCount; i++)
             {
                 TKContext.DebugLog("UassetFile", $"Name Table Entry {i}", NamesTable[i].Name, ConsoleColor.Yellow);
             }
+
             TKContext.LogInner("INFO", $"Uasset names count is {NamesCount}");
+
             //Starts directly after the name table. Assume we're already there
             ImportsTable = new FObjectImport[ImportsCount];
             for (int i = 0; i < ImportsCount; i++)
@@ -245,15 +221,16 @@ namespace UETK7.UnrealEngine
             ExportsTable = new FObjectExport[ExportsCount];
             for (int i = 0; i < ExportsCount; i++)
             {
-                ExportsTable[i] = FObjectExport.ReadEntry(stream, this, UE4Version);
+                ExportsTable[i] = FObjectExport.ReadEntry(stream, this);
                 DebugDump($"FObjectExport {i} @ {ExportsTable[i].entryLocation}", ConsoleColor.Magenta, "id", ExportsTable[i].id.ToString(), "u2", ExportsTable[i].unknown2.ToString(), 
                     "u3", ExportsTable[i].unknown3.ToString(), "type", ExportsTable[i].type, "u4", ExportsTable[i].unknown4.ToString(), "u5", ExportsTable[i].unknown5.ToString(),
                     "length", ExportsTable[i].dataLength.ToString(), "location", ExportsTable[i].dataLocation.ToString(), "u6", ExportsTable[i].unknown6.ToString(), "u7", 
                     ExportsTable[i].unknown7.ToString(), "u8", ExportsTable[i].unknown8.ToString(), "u9", ExportsTable[i].unknown9.ToString(), "u10", ExportsTable[i].unknown10.ToString(), "u11", ExportsTable[i].unknown11.ToString(),
-                    "u12", ExportsTable[i].unknown12.ToString(), "u13", ExportsTable[i].unknown13.ToString(), "u14", ExportsTable[i].unknown14.ToString());
-
-                //File.WriteAllBytes("export.dat", h.GetSerializedData(stream));
+                    "u12", ExportsTable[i].unknown12.ToString(), "u13", ExportsTable[i].unknown13.ToString(), "u14", ExportsTable[i].unknown14.ToString(), "u15", ExportsTable[i].unknown15.ToString(),
+                    "u16", ExportsTable[i].unknown16.ToString(), "u17", ExportsTable[i].unknown17.ToString(), "u18", ExportsTable[i].unknown18.ToString(), "u19", ExportsTable[i].unknown19.ToString(),
+                    "u20", ExportsTable[i].unknown20.ToString(), "u21", ExportsTable[i].unknown21.ToString(), "u22", ExportsTable[i].unknown22.ToString());
             }
+
             TKContext.LogInner("INFO", $"Uasset export table size is {ExportsCount}");
 
             using (MemoryStream ms = new MemoryStream())

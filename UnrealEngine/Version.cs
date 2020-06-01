@@ -16,7 +16,7 @@
         /// <summary>
         /// The unreal engine version used for Tekken 7's console release.
         /// </summary>
-        UE4__4_13_2_r0,
+        UE4__4_14,
         /// <summary>
         /// Undefined unreal engine 4 version.
         /// </summary>

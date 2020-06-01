@@ -35,7 +35,7 @@ namespace UETK7
 
         public static GamePlatform CurrentPlatform { get; private set; }
 
-        private static Version _CachedServerVersion;
+        //private static Version _CachedServerVersion;
 
         public static ApplicationVariables AppVariables;
 

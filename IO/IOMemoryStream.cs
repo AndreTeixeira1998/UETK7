@@ -131,7 +131,7 @@ namespace UETK7.IO
             return Encoding.ASCII.GetString(bytes.ToArray());
         }
 
-        public FNameEntry ReadNameEntry(int maxLen = 10485760, UE4Version ue4Version = UE4Version.UE4__4_13_2_r0)
+        public FNameEntry ReadNameEntry(int maxLen = 10485760, UE4Version ue4Version = UE4Version.UE4__4_14)
         {
             FNameEntry entry = new FNameEntry();
             entry.StringLength = this.ReadInt();
@@ -169,7 +169,7 @@ namespace UETK7.IO
                 entry.Name = Encoding.ASCII.GetString(buf);
             }
 
-            if(ue4Version == UE4Version.UE4__4_13_2_r0)
+            if(ue4Version == UE4Version.UE4__4_14)
                 entry.unkRef = ReadUInt();
 
             return entry;
@@ -268,7 +268,7 @@ namespace UETK7.IO
             }
         }
 
-        public FNameEntry[] ReadFNameEntries(int length, UE4Version uE4Version = UE4Version.UE4__4_13_2_r0)
+        public FNameEntry[] ReadFNameEntries(int length, UE4Version uE4Version = UE4Version.UE4__4_14)
         {
             //Create array
             FNameEntry[] data = new FNameEntry[length];

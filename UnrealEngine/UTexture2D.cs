@@ -63,8 +63,8 @@ namespace UETK7.UnrealEngine
 
         public static UTexture2D GetTextureFromUAsset(UassetFile uassetFile)
         {
-            if (uassetFile.UE4Version != UE4Version.UE4__4_13_2_r0)
-                throw new NotSupportedException($"Texture extraction from {uassetFile.UE4Version.ToString()} uasset files is not supported.");
+            /*if (uassetFile.UE4Version != UE4Version.UE4__4_14)
+                throw new NotSupportedException($"Texture extraction from {uassetFile.UE4Version.ToString()} uasset files is not supported.");*/
 
             TKContext.LogInner("INFO", $"Attempting to get a texture from file {uassetFile.Filename}");
 

@@ -27,10 +27,18 @@ namespace UETK7.UnrealEngine
         public int unknown12;
         public int unknown13;
         public int unknown14;
+        public int unknown15;
+        public int unknown16;
+        public int unknown17;
+        public int unknown18;
+        public int unknown19;
+        public int unknown20;
+        public int unknown21;
+        public int unknown22;
         public byte[] data;
 
         public int LengthOffset;
-        public static FObjectExport ReadEntry(IOMemoryStream ms, UassetFile f, UE4Version uE4Version = UE4Version.UE4__4_13_2_r0)
+        public static FObjectExport ReadEntry(IOMemoryStream ms, UassetFile f)
         {
             //Read in
             FObjectExport g = new FObjectExport();
@@ -39,10 +47,7 @@ namespace UETK7.UnrealEngine
             g.id = ms.ReadInt();
             g.unknown1 = ms.ReadInt();
             g.unknown2 = ms.ReadInt();
-
-            if (uE4Version == UE4Version.UE4__4_13_2_r0)
-                g.unknown3 = ms.ReadInt();
-
+            g.unknown3 = ms.ReadInt();
             g.type = ms.ReadNameTableEntry(f);
             g.unknown4 = ms.ReadInt();
             g.unknown5 = ms.ReadInt();
@@ -58,6 +63,14 @@ namespace UETK7.UnrealEngine
             g.unknown12 = ms.ReadInt();
             g.unknown13 = ms.ReadInt();
             g.unknown14 = ms.ReadInt();
+            g.unknown15 = ms.ReadInt();
+            g.unknown16 = ms.ReadInt();
+            g.unknown17 = ms.ReadInt();
+            g.unknown18 = ms.ReadInt();
+            g.unknown19 = ms.ReadInt();
+            g.unknown20 = ms.ReadInt();
+            g.unknown21 = ms.ReadInt();
+            g.unknown22 = ms.ReadInt();
 
             long lastPos = ms.position;
 

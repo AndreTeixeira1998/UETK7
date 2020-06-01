@@ -118,7 +118,7 @@ namespace UETK7.UnrealEngine
 
 #if DEBUG
                             TKContext.Log("PackFileEntry", i.ToString(), $"File name: {packageFileEntry.fileName} Offset: 0x{packageFileEntry.offset:X8} " +
-                                $"Size1: 0x{packageFileEntry.size1:X8} Size2: 0x{packageFileEntry.size2:X8} SHA1: {packageFileEntry.sha1.ToString()}", TKContext.LOG_TYPE_INFO, ConsoleColor.DarkCyan);
+                                $"Size1: 0x{packageFileEntry.size1:X8} Size2: 0x{packageFileEntry.size2:X8} SHA1: {packageFileEntry.sha1.ToString()}", TKContext.LOG_TYPE_DEBUG, ConsoleColor.DarkCyan);
 #endif
 
                             FileEntries[i] = packageFileEntry;
