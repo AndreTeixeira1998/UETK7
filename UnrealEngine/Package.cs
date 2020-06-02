@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using UETK7.UnrealEngine.Types.Packages;
+using UETK7.UnrealEngine.Types.Package;
 
 namespace UETK7.UnrealEngine
 {
