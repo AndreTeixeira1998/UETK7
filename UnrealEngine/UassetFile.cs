@@ -134,13 +134,15 @@ namespace UETK7.UnrealEngine
 
         private IOMemoryStream stream;
 
-        public UassetFile(string path)
+        public UassetFile(string path) : this(File.ReadAllBytes(path), path) { }
+
+        public UassetFile(byte[] data, string fullPath)
         {
-            Fullpath = path;
+            Fullpath = fullPath;
             Filename = Path.GetFileNameWithoutExtension(Fullpath);
 
             //Create a stream
-            stream = new IOMemoryStream(new FileStream(path, FileMode.Open, FileAccess.Read), true);
+            stream = new IOMemoryStream(new MemoryStream(data), true);
 
             stream.position = 0;
 
