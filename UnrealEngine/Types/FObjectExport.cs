@@ -82,19 +82,5 @@ namespace UETK7.UnrealEngine
 
             return g;
         }
-
-        public void WriteDebugString()
-        {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write($"DataPosition: {dataLocation}, ");
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.Write($"DataLength: {dataLength}, ");
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"Type: {type}, ");
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write($"EntryLocation: {entryLocation}");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write("\n");
-        }
     }
 }

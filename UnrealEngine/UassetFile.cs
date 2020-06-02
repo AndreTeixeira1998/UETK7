@@ -65,11 +65,6 @@ namespace UETK7.UnrealEngine
         public string Fullpath;
 
         /// <summary>
-        /// Is the .uasset file data is valid.
-        /// </summary>
-        public bool IsValid { get; private set; }
-
-        /// <summary>
         /// The file data of the uasset file.
         /// </summary>
         public byte[] FileData { get; private set; }
@@ -151,8 +146,7 @@ namespace UETK7.UnrealEngine
             // Check for the file's signature.
             if (signature != UNREAL_ASSET_MAGIC)
             {
-                TKContext.LogInner("ERROR", "The file provided is not a valid .uasset file.");
-                IsValid = false;
+                TKContext.LogError("The file provided is not a valid uasset file.");
                 return;
             }
 
@@ -193,8 +187,6 @@ namespace UETK7.UnrealEngine
 
             stream.ReadBytes(0x10);
             UnkOffset4 = stream.ReadInt();
-
-            IsValid = true;
 
             stream.position = NamesOffset;
 

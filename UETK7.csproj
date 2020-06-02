@@ -92,7 +92,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppContext.cs" />
+    <Compile Include="TKContext.cs" />
     <Compile Include="Data\ArrayExtensions.cs" />
     <Compile Include="Enums\GamePlatform.cs" />
     <Compile Include="IO\IOMemoryStream.cs" />
@@ -100,9 +100,6 @@
     <Compile Include="Management\Web.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Storage\ApplicationVariables.cs" />
-    <Compile Include="Storage\Preferences.cs" />
-    <Compile Include="Style\Styling.cs" />
     <Compile Include="Types\CustomValueType.cs" />
     <Compile Include="Types\DataPair.cs" />
     <Compile Include="Types\SHA1.cs" />
@@ -112,9 +109,9 @@
     <Compile Include="UnrealEngine\Types\FObjectExport.cs" />
     <Compile Include="UnrealEngine\Types\FObjectImport.cs" />
     <Compile Include="UnrealEngine\Types\FTexture2DMipMap.cs" />
-    <Compile Include="UnrealEngine\Types\Packages\PackageFileDataHeader.cs" />
-    <Compile Include="UnrealEngine\Types\Packages\PackageFileEntry.cs" />
-    <Compile Include="UnrealEngine\Types\Packages\PackageFooter.cs" />
+    <Compile Include="UnrealEngine\Types\Package\PackageFileDataHeader.cs" />
+    <Compile Include="UnrealEngine\Types\Package\PackageFileEntry.cs" />
+    <Compile Include="UnrealEngine\Types\Package\PackageFooter.cs" />
     <Compile Include="UnrealEngine\Types\UNameIndex.cs" />
     <Compile Include="UnrealEngine\Version.cs" />
     <Compile Include="UnrealEngine\UTexture2D.cs" />
