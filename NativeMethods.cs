@@ -26,6 +26,16 @@ namespace UETK7
 
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool AllocConsole();
+        internal static extern bool AllocConsole();
+
+        [DllImport("kernel32.dll")]
+        internal static extern bool FreeConsole();
+
+        [DllImport("kernel32.dll")]
+        internal static extern IntPtr GetConsoleWindow();
+
+        [DllImport("kernel32.dll")]
+        internal static extern int GetConsoleOutputCP();
+
     }
 }

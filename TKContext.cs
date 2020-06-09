@@ -37,6 +37,56 @@ namespace UETK7
 
         public static GamePlatform CurrentPlatform { get; private set; }
 
+        public static bool HasConsole
+        {
+            get { return GetConsoleWindow() != IntPtr.Zero; }
+        }
+
+        /// <summary>
+        /// Creates a new console instance if the process is not attached to a console already.
+        /// </summary>
+        public static void ShowConsole()
+        {
+            if (!HasConsole)
+            {
+                AllocConsole();
+                InvalidateOutAndErrorConsole();
+
+                TKContext.Log("Info", "Application", $"{APPLICATION_NAME} {MainVersion} by {APPLICATION_AUTHOR}", LOG_TYPE_INFO, ConsoleColor.White);
+                TKContext.Log("Info", "Application", "CLOSING THIS CONSOLE WINDOW WILL CLOSE THE APPLICATION.", LOG_TYPE_INFO, ConsoleColor.DarkRed);
+            }
+        }
+
+        private static void InvalidateOutAndErrorConsole()
+        {
+            Type type = typeof(System.Console);
+
+            System.Reflection.FieldInfo _out = type.GetField("_out",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+
+            System.Reflection.FieldInfo _error = type.GetField("_error",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+
+            System.Reflection.MethodInfo _InitializeStdOutError = type.GetMethod("InitializeStdOutError",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+
+            Debug.Assert(_out != null);
+            Debug.Assert(_error != null);
+
+            Debug.Assert(_InitializeStdOutError != null);
+
+            _out.SetValue(null, null);
+            _error.SetValue(null, null);
+
+            _InitializeStdOutError.Invoke(null, new object[] { true });
+        }
+
+        private static void SetOutAndErrorNull()
+        {
+            Console.SetOut(TextWriter.Null);
+            Console.SetError(TextWriter.Null);
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static string GetCurrentMethod()
         {
