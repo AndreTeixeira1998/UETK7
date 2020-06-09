@@ -7,7 +7,7 @@ using UETK7.UnrealEngine.Runtime.Core;
 
 namespace UETK7.IO
 {
-    public class IOMemoryStream
+    public class IOMemoryStream : IDisposable
     {
         public bool is_little_endian = true;
 
@@ -31,6 +31,12 @@ namespace UETK7.IO
         {
             this.ms = ms;
             this.is_little_endian = is_little_endian;
+        }
+
+        ~IOMemoryStream()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(false);
         }
 
         //API deserialization
@@ -344,5 +350,35 @@ namespace UETK7.IO
                 Array.Reverse(buf);
             return buf;
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ms.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+                ms = null;
+
+                disposedValue = true;
+            }
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
